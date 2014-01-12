@@ -14,7 +14,7 @@ def match(a, b):
 def rev(x):
 	return x[::-1]
 
-# returns the end cell of the local alignment
+# returns the position of the cell with maximum value
 def SmithWaterman(x, y):
 	m = len(x)
 	n = len(y)
@@ -46,7 +46,7 @@ def LocalToGlobal(x, y):
 	yyy = yy_reversed[:border[1]+1]
 	return [xxx[::-1], yyy[::-1]]
 	
-# returns the last row of the Needleman-Wunsch table	
+# returns the last row of the Needleman-Wunsch matrix	
 def NWScore(x, y):
 	score = [[0],[]]
 	for j in range(1, len(y)+1):
@@ -91,7 +91,7 @@ def NeedlemanWunsch(x, y):
 			j -= 1
 	return ''.join(reversed(aly)), ''.join(reversed(alx))
 
-#finds the index where the sum of elements of two lists is the biggest
+#finds the index where the sum of elements of two lists is maximal
 def PartitionY(sl, sr):
 	sum_list = []
 	srr = sr[::-1]
@@ -126,7 +126,6 @@ def Hirschberg(x, y):
 		z = zl+zr
 		w = wl+wr
 		
-	#print(z+" "+w)	
 	return z, w
 	
 def ReadAFile(file_name):
@@ -142,14 +141,16 @@ def WriteToAFile(file_name, first_seq, sec_seq):
 
 if __name__ == "__main__":
 	
+	if len(sys.argv) < 3:
+		sys.exit('Usage: python alignment.py <filename1> <filename2>')
 	x = ReadAFile(sys.argv[1])
 	y = ReadAFile(sys.argv[2])
 	t_start = time()
 	cropped_x, cropped_y = LocalToGlobal(x, y)
 	aligned_cropped_x, aligned_cropped_y = Hirschberg(cropped_x, cropped_y)
 	t_end = time()
-	WriteToAFile('out_seqs.txt', aligned_cropped_x, aligned_cropped_y)
-	print(t_end-t_start)
+	WriteToAFile('output.txt', aligned_cropped_x, aligned_cropped_y)
+	print("Time: "+str(t_end-t_start))
 	
 	
 	
