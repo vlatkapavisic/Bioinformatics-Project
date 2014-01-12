@@ -1,0 +1,9 @@
+C:\Andrija\Bioinformatika\Hirschberg\Hirschberg\Hirschberg\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Andrija\Bioinformatika\Hirschberg\Hirschberg\Hirschberg\bin\Debug\Hirschberg.exe
+C:\Andrija\Bioinformatika\Hirschberg\Hirschberg\Hirschberg\bin\Debug\Hirschberg.pdb
+C:\Andrija\Bioinformatika\Hirschberg\Hirschberg\Hirschberg\obj\x86\Debug\Hirschberg.exe
+C:\Andrija\Bioinformatika\Hirschberg\Hirschberg\Hirschberg\obj\x86\Debug\Hirschberg.pdb
+C:\Andrija\FER\semestar 9\Bioinformatika\Projekt\Hirschberg\Hirschberg\Hirschberg\obj\x86\Debug\Hirschberg.exe
+C:\Andrija\FER\semestar 9\Bioinformatika\Projekt\Hirschberg\Hirschberg\Hirschberg\obj\x86\Debug\Hirschberg.pdb
+C:\Andrija\FER\semestar 9\Bioinformatika\Projekt\Hirschberg\Hirschberg\Hirschberg\bin\Debug\Hirschberg.exe
+C:\Andrija\FER\semestar 9\Bioinformatika\Projekt\Hirschberg\Hirschberg\Hirschberg\bin\Debug\Hirschberg.pdb

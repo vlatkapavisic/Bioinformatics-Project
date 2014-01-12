@@ -1,0 +1,15 @@
+C:\Andrija\Bioinformatika\Hirschberg\Hirschberg\Hirschberg\bin\Release\Hirschberg.exe
+C:\Andrija\Bioinformatika\Hirschberg\Hirschberg\Hirschberg\bin\Release\Hirschberg.pdb
+C:\Andrija\Bioinformatika\Hirschberg\Hirschberg\Hirschberg\obj\x86\Release\ResolveAssemblyReference.cache
+C:\Andrija\Bioinformatika\Hirschberg\Hirschberg\Hirschberg\obj\x86\Release\Hirschberg.exe
+C:\Andrija\Bioinformatika\Hirschberg\Hirschberg\Hirschberg\obj\x86\Release\Hirschberg.pdb
+C:\Andrija\FER\semestar 9\Bioinformatika\Projekt\Hirschberg\Hirschberg\Hirschberg\obj\x86\Release\Hirschberg.exe
+C:\Andrija\FER\semestar 9\Bioinformatika\Projekt\Hirschberg\Hirschberg\Hirschberg\obj\x86\Release\Hirschberg.pdb
+C:\Andrija\FER\semestar 9\Bioinformatika\Projekt\Hirschberg\Hirschberg\Hirschberg\bin\Release\Hirschberg.exe
+C:\Andrija\FER\semestar 9\Bioinformatika\Projekt\Hirschberg\Hirschberg\Hirschberg\bin\Release\Hirschberg.pdb
+C:\Andrija\FER\semestar 9\Bioinformatika\Projekt\Hirschberg\Hirschberg\Hirschberg\obj\x86\Release\Hirschberg.csprojResolveAssemblyReference.cache
+C:\Andrija\FER\semestar 9\Bioinformatika\Projekt\Hirschberg\Hirschberg_Project\Hirschberg\obj\x86\Release\Hirschberg.exe
+C:\Andrija\FER\semestar 9\Bioinformatika\Projekt\Hirschberg\Hirschberg_Project\Hirschberg\obj\x86\Release\Hirschberg.pdb
+C:\Andrija\FER\semestar 9\Bioinformatika\Projekt\Hirschberg\Hirschberg_Project\Hirschberg\obj\x86\Release\Hirschberg.csprojResolveAssemblyReference.cache
+C:\Andrija\FER\semestar 9\Bioinformatika\Projekt\Hirschberg\Hirschberg_Project\Hirschberg\bin\Release\Hirschberg.exe
+C:\Andrija\FER\semestar 9\Bioinformatika\Projekt\Hirschberg\Hirschberg_Project\Hirschberg\bin\Release\Hirschberg.pdb
