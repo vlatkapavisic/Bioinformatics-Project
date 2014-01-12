@@ -142,14 +142,14 @@ def WriteToAFile(file_name, first_seq, sec_seq):
 if __name__ == "__main__":
 	
 	if len(sys.argv) < 3:
-		sys.exit('Usage: python alignment.py <filename1> <filename2>')
+		sys.exit("Usage: python alignment.py <filename1> <filename2>")
 	x = ReadAFile(sys.argv[1])
 	y = ReadAFile(sys.argv[2])
 	t_start = time()
 	cropped_x, cropped_y = LocalToGlobal(x, y)
 	aligned_cropped_x, aligned_cropped_y = Hirschberg(cropped_x, cropped_y)
 	t_end = time()
-	WriteToAFile('output.txt', aligned_cropped_x, aligned_cropped_y)
+	WriteToAFile("output.txt", aligned_cropped_x, aligned_cropped_y)
 	print("Time: "+str(t_end-t_start))
 	
 	
