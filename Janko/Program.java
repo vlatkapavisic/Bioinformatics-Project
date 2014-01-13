@@ -16,30 +16,37 @@ public class Program {
 	public static int mismatchPen = -1;
 	
 	public static void main(String[] args) throws IOException {
-		startWithReading();
+		startWithReading(args);
 	}
 
 	// Finds the alignment of two strings which it'll read from a file
-	public static void startWithReading() throws IOException {
-		StringPair ab = readFromFile();
+	public static void startWithReading(String[] args) throws IOException {
+		StringPair ab = readFromFile(args);
 		
 		long startTime = System.nanoTime();
-	    ab = SmithWaterman(ab.a, ab.b);
+	    	ab = SmithWaterman(ab.a, ab.b);
 		ab = Hirschberg(ab.a, ab.b);
 		long endTime = System.nanoTime();
 		System.out.println((endTime - startTime) + "ns");
 		
-		printResult(ab.a, ab.b);
+		printResult(ab.a, ab.b, args);
 	}
 
 	// Reads the input strings from two separate files
-	public static StringPair readFromFile() throws IOException {
-		System.out.println("Enter the path of the file containing the first sequence:");
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	    String aPath = br.readLine();
+	public static StringPair readFromFile(String[] args) throws IOException {
+		String aPath, bPath;
+		if(args.length < 2) {
+			System.out.println("Enter the path of the file containing the first sequence:");
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	    	aPath = br.readLine();
 
-		System.out.println("Enter the path of the file containing the second sequence:");
-	    String bPath = br.readLine();
+			System.out.println("Enter the path of the file containing the second sequence:");
+	    	bPath = br.readLine();
+		}
+		else {
+			aPath = args[0];
+			bPath = args[1];
+		}
 	    
 	    String a = readFile(aPath);
 	    String b = readFile(bPath);
@@ -47,20 +54,22 @@ public class Program {
 	}
 	
 	// Displays the final result and writes it to a file if the user wants to
-	private static void printResult(String a, String b) throws IOException {
+	private static void printResult(String a, String b, String[] args) throws IOException {
 		String mid = "";
 		for(int i = 0; i < a.length(); i++) {
 			if (a.charAt(i) == b.charAt(i)) mid += "|";
 			else if(a.charAt(i) == '-' || b.charAt(i) == '-') mid += " ";
 			else mid += "x";
 		}
-		System.out.println(a);
-		System.out.println(mid);
-		System.out.println(b);
 		
-		System.out.println("Enter the path of the output file or press ENTER if you don't want to save it to a file:");
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-	    String outPath = br.readLine();
+		String outPath;
+		if(args.length < 3) {
+			System.out.println("Enter the path of the output file or press ENTER if you don't want to save it to a file:");
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			outPath = br.readLine();
+		}
+		else outPath = args[2];
+		
 	    if (!outPath.equals("")) {
 	        BufferedWriter out = new BufferedWriter(new FileWriter(outPath));
 	        out.write(">Optimal local alignment of the first sequence:\r\n");
@@ -68,6 +77,11 @@ public class Program {
 	        out.write(">Optimal local alignment of the second sequence:\r\n");
 	        out.write(b + "\r\n");
 	        out.close();
+	    }
+	    else {
+			System.out.println(a);
+			System.out.println(mid);
+			System.out.println(b);
 	    }
 	}
 
