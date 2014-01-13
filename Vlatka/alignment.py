@@ -125,7 +125,6 @@ def Hirschberg(x, y):
 		zr, wr = Hirschberg(x[xmid:], y[ymid:])
 		z = zl+zr
 		w = wl+wr
-		
 	return z, w
 	
 def ReadAFile(file_name):
