@@ -4,14 +4,9 @@ $MATCH = 2;
 $MISMATCH = -1;
 $GAP = -2;
 
-#Match(firstChar, secondChar);
-#=> match/mismatch cost
-sub Match{
-	@_[0] eq @_[1] ? $MATCH : $MISMATCH;
-}
 
 #Max(firstValue, secondValue, ... , lastValue);
-#=> maximal value
+#out => maximal value
 sub Max{
 	my $maxVal = @_[0];
 	foreach my $value (@_){
@@ -24,20 +19,20 @@ sub Max{
 
 
 #SmithWaterman(firstString, secondString);
-#=> indices of the first best matrix element
+#out => indices of the first best matrix element
 sub SmithWaterman{
-	my @x = split("", @_[0]);
-	my @y = split("", @_[1]);
-	my $m = @x;
-	my $n = @y;
+	my $x = @_[0];
+	my $y = @_[1];
+	my $m = length $x;
+	my $n = length $y;
 	my @h0 = (0) x ($m+1);
-	my @h1 = (0) x ($m+1);
+	my @h1 = @h0;
 	my $maxValue = 0;
 	my $maxI = 0;
 	my $maxJ = 0;
 	for(my $row = 1; $row < $n+1; $row += 1){
 		for(my $col = 1; $col < $m+1; $col += 1){
-			$h1[$col] = &Max(0, $h0[$col-1]+ &Match($x[$col-1], $y[$row-1]), $h1[$col-1] + $GAP, $h0[$col] + $GAP);
+			$h1[$col] = &Max(0, $h0[$col-1]+ (substr($x, $col-1, 1) eq substr($y, $row-1, 1) ? $MATCH : $MISMATCH), $h1[$col-1] + $GAP, $h0[$col] + $GAP);
 			if ($h1[$col] > $maxValue){
 				$maxValue = $h1[$col];
 				$maxI = $col-1;
@@ -51,26 +46,22 @@ sub SmithWaterman{
 }
 
 #LocalToGlobal(firstString, secondString);
-# => strings that will be used in the global alignment
+#out => strings that will be used in the global alignment
 sub LocalToGlobal{
-	my @xLocal = @_[0];
-	my @yLocal = @_[1];
-	my @border = &SmithWaterman(@xLocal, @yLocal);
-	my @xReverse = split("", @xLocal[0]);
-	my @yReverse = split("", @yLocal[0]);
-	@xReverse = join("", reverse @xReverse[0..$border[0]]);
-	@yReverse = join("", reverse @yReverse[0..$border[1]]);
-	@border = &SmithWaterman(@xReverse, @yReverse);
-	my @xNormal = split("", @xReverse[0]);
-	my @yNormal = split("", @yReverse[0]);
-	@xNormal = join("", reverse @xNormal[0..$border[0]]);
-	@yNormal = join("", reverse @yNormal[0..$border[1]]);
+	my $xLocal = @_[0];
+	my $yLocal = @_[1];
+	my @border = &SmithWaterman($xLocal, $yLocal);
+	my $xReverse = scalar reverse substr ($xLocal, 0, $border[0]+1);
+	my $yReverse = scalar reverse substr($yLocal, 0, $border[1]+1);
+	@border = &SmithWaterman($xReverse, $yReverse);
+	my $xNormal = reverse substr($xReverse, 0, $border[0]+1);
+	my $yNormal = reverse substr($yReverse, 0, $border[1]+1);
 	
-	(reverse(@xNormal), reverse(@yNormal));
+	($xNormal, $yNormal);
 }
 
 #NWScore(firstString, secondString);
-#=> last row in the NW matrix
+#out => last row in the NW matrix
 sub NWScore{
 	my @x = split("", @_[0]);
 	my @y = split("", @_[1]);
@@ -84,7 +75,7 @@ sub NWScore{
 	for($i = 1; $i < $xLen; $i += 1){
 		$score1[0] = $score0[0] + $GAP;
 		for($j = 1; $j < $yLen; $j += 1){
-			$score1[$j] = &Max($score0[$j-1] + &Match($x[$i-1], $y[$j-1]), $score1[$j-1] + $GAP, $score0[$j] + $GAP);
+			$score1[$j] = &Max($score0[$j-1] + ($x[$i-1] eq $y[$j-1] ? $MATCH : $MISMATCH), $score1[$j-1] + $GAP, $score0[$j] + $GAP);
 		}
 		@score0 = @score1;
 		@score1 = (0) x ($xLen);
@@ -93,7 +84,7 @@ sub NWScore{
 }
 
 #NeedlemanWunsch(firstString, secondString);
-# => optimal alignment by NW, used only for Nx1 or 1xM
+#out => optimal alignment using the Needleman-Wunsch algorithm, used only for Nx1 or 1xM
 sub NeedlemanWunsch{
 	my @x = split("", @_[0]);
 	my @y = split("", @_[1]);
@@ -110,17 +101,18 @@ sub NeedlemanWunsch{
 	}
 	for($i = 1; $i < $rowLen; $i += 1){
 		for($j = 1; $j < $colLen; $j += 1){
-			$f[$i + $rowLen*$j] = &Max($f[($i-1)+ $rowLen*($j-1)] + &Match($x[$i-1], $y[$j-1]), $f[($i-1)+$rowLen*$j] + $GAP, $f[$i+$rowLen*($j-1)] + $GAP);
+			$f[$i + $rowLen*$j] = &Max($f[($i-1)+ $rowLen*($j-1)] + ($x[$i-1] eq $y[$j-1] ? $MATCH : $MISMATCH), $f[($i-1)+$rowLen*$j] + $GAP, $f[$i+$rowLen*($j-1)] + $GAP);
 		}
 	}
-	@alx = ();
-	@aly = ();
+	
+	my @alx = ();
+	my @aly = ();
 	
 	$i = $xLen;
 	$j = $yLen;
 	
 	while((($i > 0) || ($j > 0))){
-		if(($i > 0) && ($j > 0) && ($f[$i+ $rowLen*$j] == $f[$i-1 + $rowLen*($j-1)]+ &Match($x[$i-1], $y[$j-1]))){
+		if(($i > 0) && ($j > 0) && ($f[$i+ $rowLen*$j] == $f[$i-1 + $rowLen*($j-1)]+ ($x[$i-1] eq $y[$j-1] ? $MATCH : $MISMATCH))){
 			push(@alx, $x[$i-1]);
 			push(@aly, $y[$j-1]);
 			$i -= 1;
@@ -137,11 +129,12 @@ sub NeedlemanWunsch{
 			$j -= 1;
 		}
 	}
+	
 	return (join("", reverse @alx), join("", reverse @aly));
 }
 
 #PartitionY(firstRow, secondRow);
-#=> index where the sum of elements from both lists is max
+#out => index where the sum of elements from both lists is max
 sub PartitionY{
 	my $sl = @_[0];
 	my $sr = @_[1];
@@ -162,7 +155,7 @@ sub PartitionY{
 }
 
 #Hirschberg(firstString, secondString);
-# => complete optimal global alignment of two strings
+#out => complete optimal global alignment of two strings
 sub Hirschberg{
 	my $z = "";
 	my $w = "";
@@ -204,57 +197,58 @@ sub Hirschberg{
 
 
 #MAIN
-$startTime = [Time::HiRes::gettimeofday];
+{
+	#Arguments check
+	if(scalar @ARGV < 2){
+		print "Correct usage: \"perl $0 <fileName1> <fileName2> <optional:FileOut>\"";
+		die "Wrong call";
+	}
+	if(scalar @ARGV >= 3){
+		$fileOut = $ARGV[2];
+	}
+	else{
+		$fileOut = "output.txt";
+	}
+	#File input
+	open FILEONE, @ARGV[0];
+	open FILETWO, @ARGV[1];
 
-if(scalar @ARGV < 2){
-	print "Pravilno pozivanje: \"perl $0 <fileName1> <fileName2> <optional:FileOut> <optional:OutFormat>\"";
-	die "Wrong call";
+	while(defined( my $line = <FILEONE>)){
+		$line =~ s/^>(.*)$//g;
+		$line =~ s/\s//g;
+		$stringOne .= $line;
+	}
+
+	while(defined( my $line = <FILETWO>)){
+		$line =~ s/^>(.*)$//g;
+		$line =~ s/\s//g;
+		$stringTwo .= $line;
+	}
+
+	close FILEONE;
+	close FILETWO;
+	
+	#String error check
+	if($stringOne le "" || $stringTwo le ""){
+		print "One of the strings is empty!";
+		die "Bad input";
+	} 
+
+	$startTime = [Time::HiRes::gettimeofday];
+	
+	#Start of algorithm
+	my($globalFirst, $globalSecond) = &LocalToGlobal($stringOne, $stringTwo);
+	my($alignedFirst, $alignedSecond) = &Hirschberg($globalFirst, $globalSecond);
+	#End of algorithm
+	$endTime = [Time::HiRes::gettimeofday];
+
+	$interval = Time::HiRes::tv_interval ($startTime, $endTime);
+	
+	#File output
+	open FILEOUT, ">", $fileOut;
+	print FILEOUT ">Hirschberg, sequence lengths ", length $stringOne, " and ", length $stringTwo, ", time taken: $interval s.\n";
+	print FILEOUT $alignedFirst, "\n>Second string:\n", $alignedSecond;
+	close FILEOUT;
 }
-if(scalar @ARGV >= 3){
-	$fileOut = $ARGV[2];
-}
-else{
-	$fileOut = "output.txt";
-}
-
-open FILEONE, @ARGV[0];
-open FILETWO, @ARGV[1];
-
-while(defined( my $line = <FILEONE>)){
-	$line =~ s/^>(.*)$//g;
-	$line =~ s/\s//g;
-	$stringOne .= $line;
-}
-
-while(defined( my $line = <FILETWO>)){
-	$line =~ s/^>(.*)$//g;
-	$line =~ s/\s//g;
-	$stringTwo .= $line;
-}
-
-close FILEONE;
-close FILETWO;
-
-if($stringOne le "" || $stringTwo le ""){
-	print "Jedan od stringova je prazan!";
-	die "Bad input";
-} 
-
-
-
-@LTG = &LocalToGlobal($stringOne, $stringTwo);
-
-my($alignedFirst, $alignedSecond) = &Hirschberg($LTG[0], $LTG[1]);
-
-$endTime = [Time::HiRes::gettimeofday];
-
-
-$interval = Time::HiRes::tv_interval ($startTime, $endTime);
- 
-open FILEOUT, ">", $fileOut;
-print FILEOUT ">Hirschberg, duljine nizova ", length $stringOne, " i ", length $stringTwo, ", vrijeme: $interval s.\n";
-print FILEOUT $alignedFirst, "\n", $alignedSecond;
-close FILEOUT;
-
 
 
