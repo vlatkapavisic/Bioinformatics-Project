@@ -21,21 +21,21 @@ public class Program {
 
 	// Finds the alignment of two strings which it'll read from a file
 	public static void startWithReading(String[] args) throws IOException {
-		StringPair ab = readFromFile(args);
+		StringPair ab = readFromFile(args); 			// Gets the input strings from the given files
 		
-		long startTime = System.nanoTime();
-	    	ab = SmithWaterman(ab.a, ab.b);
-		ab = Hirschberg(ab.a, ab.b);
-		long endTime = System.nanoTime();
-		System.out.println((endTime - startTime) + "ns");
+		long startTime = System.nanoTime(); 					// Starts measuring time
+	    ab = SmithWaterman(ab.a, ab.b); 						// Finds the local alignment of the input strngs
+		ab = Hirschberg(ab.a, ab.b); 							// Starts the recursion which finds the global alignment of the strings
+		long endTime = System.nanoTime();						// Finishes measuring time
+		System.out.println((endTime - startTime) + "ns");		// Displays the time (in nanosecond)s it took to find the alignment
 		
-		printResult(ab.a, ab.b, args);
+		printResult(ab.a, ab.b, args);							// Displays the result either in the console or writes it in a file
 	}
 
 	// Reads the input strings from two separate files
 	public static StringPair readFromFile(String[] args) throws IOException {
 		String aPath, bPath;
-		if(args.length < 2) {
+		if(args.length < 2) {			// If the file paths were not given as arguments, it asks the user for the location of the files
 			System.out.println("Enter the path of the file containing the first sequence:");
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	    	aPath = br.readLine();
@@ -48,8 +48,8 @@ public class Program {
 			bPath = args[1];
 		}
 	    
-	    String a = readFile(aPath);
-	    String b = readFile(bPath);
+	    String a = readFile(aPath); 	// Reads the input files
+	    String b = readFile(bPath); 
 	    return new StringPair(a, b);
 	}
 	
@@ -57,20 +57,20 @@ public class Program {
 	private static void printResult(String a, String b, String[] args) throws IOException {
 		String mid = "";
 		for(int i = 0; i < a.length(); i++) {
-			if (a.charAt(i) == b.charAt(i)) mid += "|";
-			else if(a.charAt(i) == '-' || b.charAt(i) == '-') mid += " ";
+			if (a.charAt(i) == b.charAt(i)) mid += "|";							// An easier way to display if the characters match or
+			else if(a.charAt(i) == '-' || b.charAt(i) == '-') mid += " ";		// if there's an empty space in one of the alignments
 			else mid += "x";
 		}
 		
 		String outPath;
-		if(args.length < 3) {
+		if(args.length < 3) {					// If the output path is not given as an arugment, the program asks the user to write it in the console
 			System.out.println("Enter the path of the output file or press ENTER if you don't want to save it to a file:");
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 			outPath = br.readLine();
 		}
 		else outPath = args[2];
 		
-	    if (!outPath.equals("")) {
+	    if (!outPath.equals("")) {				// If the output file is set, we write the alignment in it
 	        BufferedWriter out = new BufferedWriter(new FileWriter(outPath));
 	        out.write(">Optimal local alignment of the first sequence:\r\n");
 	        out.write(a + "\r\n");
@@ -78,7 +78,7 @@ public class Program {
 	        out.write(b + "\r\n");
 	        out.close();
 	    }
-	    else {
+	    else {									// If the output file is not set, the alignment is diplayed in the console
 			System.out.println(a);
 			System.out.println(mid);
 			System.out.println(b);
@@ -89,8 +89,8 @@ public class Program {
 	private static StringPair Hirschberg(String a, String b) {
 		String z = "";
 		String w = "";
-		if (a.length() == 0 || b.length() == 0) {
-	    	if (a.length() == 0) {
+		if (a.length() == 0 || b.length() == 0) {				// If one of the strings is empty, we align the other string's characters
+	    	if (a.length() == 0) {								// with empty spaces in that one
 	    		z = "";
 	    		w = "";
 	    		for (int i = 0; i < b.length(); i++) {
@@ -105,16 +105,16 @@ public class Program {
 	    		}
 	    	}
 		}
-	    else if (a.length() == 1 || b.length() == 1) {
-	    	StringPair zw = NeedlemanWunsch(a, b);
+	    else if (a.length() == 1 || b.length() == 1) {			// If one of the strings has a length of 1, we can use the normal Needleman-Wunsch
+	    	StringPair zw = NeedlemanWunsch(a, b);				// algorithm to ailgn them without the memory requirements exceeding linear
 	    	z = zw.a; w = zw.b;
 	    }
 	    else {
-	    	int xmid = a.length()/2; // mozda nije int
-	        int[] score_l = NWScore(a.substring(0, xmid), b);
-	        int[] score_r = NWScore(reverseString(a.substring(xmid)), reverseString(b));
-	        int ymid = PartitionY(score_l, score_r);
-	        StringPair zlwl = Hirschberg(a.substring(0, xmid), b.substring(0, ymid));
+	    	int xmid = a.length()/2; 														// Otherwise we find the middle x-value and use it to
+	        int[] score_l = NWScore(a.substring(0, xmid), b);								// find the middle y-value through the Needleman-Wunsch 
+	        int[] score_r = NWScore(reverseString(a.substring(xmid)), reverseString(b));	// algorithm by finding the maximum value of the middle edge
+	        int ymid = PartitionY(score_l, score_r);										// between the middle two rows and then we align the
+	        StringPair zlwl = Hirschberg(a.substring(0, xmid), b.substring(0, ymid));		// top-left and bottom-right subsequences recursively
 	        StringPair zrwr = Hirschberg(a.substring(xmid), b.substring(ymid));
 	        z = zlwl.a + zrwr.a;
 	        w = zlwl.b + zrwr.b;
@@ -126,17 +126,17 @@ public class Program {
 	private static int[] NWScore(String a, String b) {
 		ArrayList<Integer> row0 = new ArrayList<Integer>();
 		ArrayList<Integer> row1 = new ArrayList<Integer>();
-		row0.add(0);
-		for (int j = 1; j < b.length() + 1; j++) {
+		row0.add(0);												// Creates the first row of the table by giving 
+		for (int j = 1; j < b.length() + 1; j++) {					// each element the value of index*gapPenalty
 			row0.add(row0.get(j - 1) + gapPen);
 		}
-		for (int i = 1; i < a.length() + 1; i++) {
-			row1.add(row0.get(0) + gapPen);
+		for (int i = 1; i < a.length() + 1; i++) {					// Uses the row0 to find the row1 (bottom row) by finding the best way to align
+			row1.add(row0.get(0) + gapPen);							// the sequences
 			for(int j = 1; j < b.length() + 1; j++) {
 				row1.add(max(row0.get(j - 1) + matchPenalty(a.charAt(i - 1), b.charAt(j - 1)), row1.get(j - 1) + gapPen, row0.get(j) + gapPen));
 			}
-			row0 = row1;
-			row1 = new ArrayList<Integer>();
+			row0 = row1;											// Makes the former bottom row the top row and creates a new bottom row for the next
+			row1 = new ArrayList<Integer>();						// step o the for loop
 		}
 		return listToArray(row0);
 	}
@@ -173,7 +173,7 @@ public class Program {
 	}
 
 	// Uses the Needleman-Wunsch algorithm to find the alignment when at least one of
-	// the strings has the size of 1 and therefor it uses linear space requirements
+	// the strings has the size of 1 and therefore it uses linear space requirements
 	private static StringPair NeedlemanWunsch(String a, String b) {
 		int[][] f = new int[a.length() + 1][b.length() + 1];
 		for(int i = 0; i < a.length() + 1; i++) {
@@ -243,7 +243,7 @@ public class Program {
         int maxValue = 0, maxI = 0, maxJ = 0;
         int left, up, diag;
 
-        for (int i = 0; i < b.length(); i++)
+        for (int i = 0; i < b.length(); i++)			// Goes through every element in the table in order to find the one with the maximum value
         {
             for (int j = 1; j < row1.length; j++)
             {
@@ -264,7 +264,7 @@ public class Program {
             row2 = new int[a.length() + 1];
         }
         
-        return new StringPair(a.substring(0, maxJ), b.substring(0, maxI + 1));
+        return new StringPair(a.substring(0, maxJ), b.substring(0, maxI + 1));	// And in the end it cuts the strings at the index of the max value
 	}
 	
 	// Finds the biggest of the three integers
