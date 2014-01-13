@@ -14,7 +14,7 @@ def match(a, b):
 def rev(x):
 	return x[::-1]
 
-# returns the position of the cell with maximum value
+# returns the position of the cell with maximum value; it's using two rows of the matrix
 def SmithWaterman(x, y):
 	m = len(x)
 	n = len(y)
@@ -46,7 +46,7 @@ def LocalToGlobal(x, y):
 	yyy = yy_reversed[:border[1]+1]
 	return [xxx[::-1], yyy[::-1]]
 	
-# returns the last row of the Needleman-Wunsch matrix	
+# returns the last row of the Needleman-Wunsch matrix; it's using two rows of the matrix	
 def NWScore(x, y):
 	score = [[0],[]]
 	for j in range(1, len(y)+1):
@@ -91,7 +91,7 @@ def NeedlemanWunsch(x, y):
 			j -= 1
 	return ''.join(reversed(aly)), ''.join(reversed(alx))
 
-#finds the index where the sum of elements of two lists is maximal
+# finds the index where the sum of elements of two lists is maximal
 def PartitionY(sl, sr):
 	sum_list = []
 	srr = sr[::-1]
@@ -99,7 +99,7 @@ def PartitionY(sl, sr):
 		sum_list.append(sl[i] + srr[i])
 	return sum_list.index(max(sum_list))
 	
-#finds the optimal global alignment of two arrays; linear memory complexity	
+# finds the optimal global alignment of two arrays; linear memory complexity	
 def Hirschberg(x, y):
 	z = ""
 	w = ""
@@ -143,13 +143,17 @@ if __name__ == "__main__":
 	
 	if len(sys.argv) < 3:
 		sys.exit("Usage: python alignment.py <filename1> <filename2>")
+	out_file = raw_input("Enter the name of the output file or press ENTER if you don't want to save the output: ")
 	x = ReadAFile(sys.argv[1])
 	y = ReadAFile(sys.argv[2])
 	t_start = time()
 	cropped_x, cropped_y = LocalToGlobal(x, y)
 	aligned_cropped_x, aligned_cropped_y = Hirschberg(cropped_x, cropped_y)
 	t_end = time()
-	WriteToAFile("output.txt", aligned_cropped_x, aligned_cropped_y)
+	if out_file != "":
+		WriteToAFile("output.txt", aligned_cropped_x, aligned_cropped_y)
+	print(">optimal local alignment of the first sequence\n{0}" \
+        "\n>optimal local alignment of the second sequence\n{1}".format(aligned_cropped_x, aligned_cropped_y))
 	print("Time: "+str(t_end-t_start))
 	
 	
