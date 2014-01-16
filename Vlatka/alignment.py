@@ -150,7 +150,7 @@ if __name__ == "__main__":
 	aligned_cropped_x, aligned_cropped_y = Hirschberg(cropped_x, cropped_y)
 	t_end = time()
 	if out_file != "":
-		WriteToAFile("output.txt", aligned_cropped_x, aligned_cropped_y)
+		WriteToAFile(out_file, aligned_cropped_x, aligned_cropped_y)
 	print(">optimal local alignment of the first sequence\n{0}" \
         "\n>optimal local alignment of the second sequence\n{1}".format(aligned_cropped_x, aligned_cropped_y))
 	print("Time: "+str(t_end-t_start))
